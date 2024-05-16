@@ -68,10 +68,10 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
     const rangeActiveStartEnd = (day: UnwrapRef<ICalendarDay>, isStart = true): boolean => {
         if (
             Array.isArray(modelValue.value) &&
-            modelValue.value.length === 2
+            modelValue.value.length > 1
         ) {
             if (props.hideOffsetDates && !day.current) return false;
-            return isDateEqual(getDate(day.value), modelValue.value[isStart ? 0 : 1]);
+            return isDateEqual(getDate(day.value), isStart ? modelValue.value[0] : last(modelValue.value)!);
         }
         return (
             (checkDateEqual(day, isStart) && checkDateBefore(isStart)) ||
@@ -192,7 +192,7 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
             !(!day.current && props.hideOffsetDates) &&
             !isActiveDate(day)
         ) {
-            return rangeActive(day) && isActive(day);
+            return defaultedRange.value.enabled ? rangeActive(day) : isActive(day);
         }
         return false;
     };
