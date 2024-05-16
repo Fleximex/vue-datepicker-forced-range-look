@@ -1,6 +1,6 @@
 {
   "name": "@fleximex/vue-datepicker-forced-range-look",
-  "version": "8.6.9",
+  "version": "8.7.0",
   "description": "Datepicker component for Vue 3",
   "author": "Vuepic",
   "private": false,
@@ -81,7 +81,9 @@
     "vue-tsc": "^2.0.17"
   },
   "dependencies": {
-    "date-fns": "^3.6.0"
+    "@types/lodash": "^4.17.1",
+    "date-fns": "^3.6.0",
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
     "vue": ">=3.2.0"

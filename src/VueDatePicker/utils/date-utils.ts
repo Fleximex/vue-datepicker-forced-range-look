@@ -41,6 +41,7 @@ import type {
 } from '@/interfaces';
 
 import type { Duration, Locale } from 'date-fns';
+import last from 'lodash/last';
 
 const parseTextToDate = (
     value: string,
@@ -170,8 +171,9 @@ export const isDateAfter = (date: DateValue, dateToCompare: DateValue): boolean 
 };
 
 export const isDateBetween = (range: Date[], hoverDate: Date | null, dateToCheck: Date): boolean => {
-    if (range?.[0] && range?.[1]) {
-        return isDateAfter(dateToCheck, range[0]) && isDateBefore(dateToCheck, range[1]);
+    const lastDate = range.length > 1 ? last(range) : undefined;
+    if (range?.[0] && lastDate) {
+        return isDateAfter(dateToCheck, range[0]) && isDateBefore(dateToCheck, lastDate);
     }
     if (range?.[0] && hoverDate) {
         return (
@@ -343,7 +345,7 @@ export const checkRangeEnabled = <T>(fn: () => T, range: boolean): T => {
 
 export const isValidDate = (value: Date | Date[] | null | (Date | null)[]): boolean => {
     if (Array.isArray(value)) {
-        return isValid(value[0]) && (value[1] ? isValid(value[1]) : true);
+        return isValid(value[0]) && (value[1] ? isValid(last(value)) : true);
     }
     return value ? isValid(value) : false;
 };
