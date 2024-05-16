@@ -96,7 +96,7 @@
     } from '@/composables';
     import { onClickOutside } from '@/directives/clickOutside';
     import { AllProps } from '@/props';
-    import { findNextFocusableElement, getNumVal } from '@/utils/util';
+    import {convertType, findNextFocusableElement, getNumVal} from '@/utils/util';
 
     import type {
         DynamicClass,
@@ -107,6 +107,7 @@
         MenuView,
     } from '@/interfaces';
     import { useDefaults } from '@/composables/defaults';
+    import {sortBy} from "lodash";
 
     const emit = defineEmits([
         'update:model-value',
@@ -446,7 +447,11 @@
         const validDate = Array.isArray(date) ? !date.some((d) => !validateDate(d)) : validateDate(date);
         const validTime = isValidTime(date);
         if (validDate && validTime) {
-            internalModelValue.value = date;
+            let newValue = date;
+            if (Array.isArray(date)) {
+              newValue = sortBy(date, (d: Date) => d.valueOf());
+            }
+            internalModelValue.value = newValue;
             if (submit) {
                 shouldFocusNext.value = tabbed;
                 selectDate();
@@ -468,7 +473,11 @@
     };
 
     const updateInternalModelValue = (value: Date | Date[]): void => {
-        internalModelValue.value = value;
+        let newValue = value;
+        if (Array.isArray(value)) {
+          newValue = sortBy(value, (d: Date) => d.valueOf());
+        }
+        internalModelValue.value = newValue;
     };
 
     const handleInputFocus = () => {

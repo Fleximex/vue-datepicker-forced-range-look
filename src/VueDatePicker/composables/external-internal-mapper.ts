@@ -38,10 +38,6 @@ export const useExternalInternalMapper = (emit: VueEmit, props: AllPropsType, is
     watch(
         internalModelValue,
         () => {
-            if (internalModelValue.value && Array.isArray(internalModelValue.value)) {
-                internalModelValue.value = internalModelValue.value = sortBy(internalModelValue.value, (date) => date.valueOf())
-            }
-            internalModelValue.value
             if (typeof props.onInternalModelChange === 'function') {
                 emit('internal-model-change', internalModelValue.value, emitModelValue(true));
             }
@@ -271,7 +267,11 @@ export const useExternalInternalMapper = (emit: VueEmit, props: AllPropsType, is
         const mappedDate = mapExternalToInternal(value);
 
         if (isValidDate(convertType(mappedDate))) {
-            internalModelValue.value = convertType(mappedDate);
+            let newValue = convertType(mappedDate);
+            if (Array.isArray(internalModelValue.value)) {
+                newValue = sortBy(internalModelValue.value, (d: Date) => d.valueOf());
+            }
+            internalModelValue.value = newValue
             formatInputValue();
         } else {
             internalModelValue.value = null;
