@@ -1,6 +1,6 @@
 {
   "name": "@fleximex/vue-datepicker-forced-range-look",
-  "version": "8.6.6",
+  "version": "8.6.7",
   "description": "Datepicker component for Vue 3",
   "author": "Vuepic",
   "private": false,
