@@ -177,7 +177,6 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
     };
 
     const isModelAutoActive = () => {
-        if (props.modelAuto) return isModelAuto(props.internalModelValue);
         return true;
     };
 
@@ -345,9 +344,10 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
 
     // Return specific set of classes depending on the config, since we don't need to check for all
     const getModeClasses = (day: ICalendarDay) => {
-        if (defaultedRange.value.autoRange) return autoRangeClasses(day);
-        if (props.modelAuto) return { ...singleDateClasses(day), ...rangeDateClasses(day) };
-        return rangeDateClasses(day);
+        if (defaultedRange.value.enabled) {
+            return { ...singleDateClasses(day), ...rangeDateClasses(day) };
+        }
+        return singleDateClasses(day);
     };
 
     // Get needed classes
