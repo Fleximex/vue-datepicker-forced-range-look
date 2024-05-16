@@ -192,7 +192,7 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
             !(!day.current && props.hideOffsetDates) &&
             !isActiveDate(day)
         ) {
-            return defaultedRange.value.enabled ? rangeActive(day) : isActive(day);
+            return rangeActive(day);
         }
         return false;
     };
