@@ -143,13 +143,6 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
         return isDateBetween(modelValue.value as Date[], hoveredDate.value, calendarDay.value);
     };
 
-    const isSingleInModelAuto = (): boolean => {
-        if (props.modelAuto && Array.isArray(props.internalModelValue)) {
-            return !!props.internalModelValue[0];
-        }
-        return false;
-    };
-
     const isModelAutoActive = () => {
         if (props.modelAuto) return isModelAuto(props.internalModelValue);
         return true;
@@ -164,7 +157,7 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
 
     // Check if the date is selected
     const isActive = (day: ICalendarDay) => {
-        return props.modelAuto ? isSingleInModelAuto() && isActiveDate(day) : false;
+        return props.modelAuto ? isActiveDate(day) : false;
     };
 
     // Check if the date should be highlighted
