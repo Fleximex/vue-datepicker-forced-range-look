@@ -170,16 +170,18 @@ export const isDateAfter = (date: DateValue, dateToCompare: DateValue): boolean 
     return isAfter(resetDateTime(date), resetDateTime(dateToCompare));
 };
 
-export const isDateBetween = (range: Date[], hoverDate: Date | null, dateToCheck: Date): boolean => {
-    const lastDate = range.length > 1 ? last(range) : undefined;
-    if (range?.[0] && lastDate) {
-        return isDateAfter(dateToCheck, range[0]) && isDateBefore(dateToCheck, lastDate);
-    }
-    if (range?.[0] && hoverDate) {
-        return (
-            (isDateAfter(dateToCheck, range[0]) && isDateBefore(dateToCheck, hoverDate)) ||
-            (isDateBefore(dateToCheck, range[0]) && isDateAfter(dateToCheck, hoverDate))
-        );
+export const isDateBetween = (range: Date | Date[] | null, hoverDate: Date | null, dateToCheck: Date): boolean => {
+    if (range && Array.isArray(range)) {
+        const lastDate = range.length > 1 ? last(range) : undefined;
+        if (range?.[0] && lastDate) {
+            return isDateAfter(dateToCheck, range[0]) && isDateBefore(dateToCheck, lastDate);
+        }
+        if (range?.[0] && hoverDate) {
+            return (
+              (isDateAfter(dateToCheck, range[0]) && isDateBefore(dateToCheck, hoverDate)) ||
+              (isDateBefore(dateToCheck, range[0]) && isDateAfter(dateToCheck, hoverDate))
+            );
+        }
     }
     return false;
 };
@@ -345,7 +347,7 @@ export const checkRangeEnabled = <T>(fn: () => T, range: boolean): T => {
 
 export const isValidDate = (value: Date | Date[] | null | (Date | null)[]): boolean => {
     if (Array.isArray(value)) {
-        return isValid(value[0]) && (value[1] ? isValid(last(value)) : true);
+        return isValid(value[0]) && (value[1] ? isValid(value[1]) : true);
     }
     return value ? isValid(value) : false;
 };
