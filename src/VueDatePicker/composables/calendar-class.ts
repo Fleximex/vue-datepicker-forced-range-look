@@ -65,25 +65,13 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
     /**
      * Check when to add a proper active start/end date class on range picker
      */
-    const rangeActiveStartEnd = (day: UnwrapRef<ICalendarDay>, isStart = true): boolean => {
-        if (
-            (defaultedRange.value.enabled || props.weekPicker) &&
-            Array.isArray(modelValue.value) &&
-            modelValue.value.length === 2
-        ) {
-            if (props.hideOffsetDates && !day.current) return false;
-            return isDateEqual(getDate(day.value), modelValue.value[isStart ? 0 : 1]);
-        }
-
-        if (defaultedRange.value.enabled) {
-            return (
-                (checkDateEqual(day, isStart) && checkDateBefore(isStart)) ||
-                (isDateEqual(day.value, Array.isArray(modelValue.value) ? modelValue.value[0] : null) &&
-                    checkRangeDirection(isStart))
-            );
+    const rangeActiveStartEnd = (day: ICalendarDay, isStart = true): boolean => {
+        if (Array.isArray(modelValue.value)) {
+            return modelValue.value.some(date => isDateEqual(date, day.value));
         }
         return false;
     };
+
 
     // If the range mode is used, checks for the end value of hovered date
     const isHoverDateStartEnd = (calendarDay: ICalendarDay, start?: boolean): boolean => {
@@ -166,9 +154,11 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
      * If range mode used, this will check if the calendar day is between 2 active dates
      */
     const rangeActive = (calendarDay: ICalendarDay): boolean => {
-        return isDateBetween(modelValue.value as Date[], hoveredDate.value, calendarDay.value);
+        if (Array.isArray(modelValue.value)) {
+            return modelValue.value.some(date => isDateEqual(date, calendarDay.value));
+        }
+        return false;
     };
-
     const isSingleInModelAuto = (): boolean => {
         if (props.modelAuto && Array.isArray(props.internalModelValue)) {
             return !!props.internalModelValue[0];
@@ -226,13 +216,16 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
 
     const isBetween = (day: ICalendarDay) => {
         if (
-            (defaultedRange.value.enabled || props.weekPicker) &&
-            (defaultedMultiCalendars.value.count > 0 ? day.current : true) &&
-            isModelAutoActive() &&
-            !(!day.current && props.hideOffsetDates) &&
-            !isActiveDate(day)
+          (defaultedRange.value.enabled || props.weekPicker) &&
+          (defaultedMultiCalendars.value.count > 0 ? day.current : true) &&
+          isModelAutoActive() &&
+          !(!day.current && props.hideOffsetDates) &&
+          !isActiveDate(day)
         ) {
-            return rangeActive(day);
+            if (Array.isArray(modelValue.value)) {
+                return modelValue.value.some(date => isDateEqual(date, day.value));
+            }
+            return false;
         }
         return false;
     };
@@ -308,14 +301,14 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
 
     const rangeStartEnd = (day: ICalendarDay) => {
         const isRangeStart =
-            defaultedMultiCalendars.value.count > 0
-                ? day.current && rangeActiveStartEnd(day) && isModelAutoActive()
-                : rangeActiveStartEnd(day) && isModelAutoActive();
+          defaultedMultiCalendars.value.count > 0
+            ? day.current && rangeActiveStartEnd(day) && isModelAutoActive()
+            : rangeActiveStartEnd(day) && isModelAutoActive();
 
         const isRangeEnd =
-            defaultedMultiCalendars.value.count > 0
-                ? day.current && rangeActiveStartEnd(day, false) && isModelAutoActive()
-                : rangeActiveStartEnd(day, false) && isModelAutoActive();
+          defaultedMultiCalendars.value.count > 0
+            ? day.current && rangeActiveStartEnd(day, false) && isModelAutoActive()
+            : rangeActiveStartEnd(day, false) && isModelAutoActive();
         return { isRangeStart, isRangeEnd };
     };
 
@@ -327,7 +320,7 @@ export const useCalendarClass = (modelValue: WritableComputedRef<InternalModuleV
             dp__range_end: isRangeEnd,
             dp__range_between: isBetween(day),
             dp__date_hover:
-                isDateEqual(day.value, hoveredDate.value) && !isRangeStart && !isRangeEnd && !props.weekPicker,
+              isDateEqual(day.value, hoveredDate.value) && !isRangeStart && !isRangeEnd && !props.weekPicker,
             dp__date_hover_start: isHoverDateStartEnd(day, true),
             dp__date_hover_end: isHoverDateStartEnd(day, false),
         };
